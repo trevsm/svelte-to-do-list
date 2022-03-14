@@ -16,6 +16,10 @@
   // Subscriptions (is updated every time state is updated)
   $: completed = toDoList.filter((task) => task.done).length;
   $: local('toDoList', toDoList);
+  $: header = toDoList.length
+    ? "Today's Tasks: " +
+      (toDoList.length ? `(${completed}/${toDoList.length})` : '')
+    : 'No Tasks';
 
   // To-do functions
   function addTask() {
@@ -40,9 +44,7 @@
 <main>
   <div class="top">
     <h2>
-      Today's Tasks: {toDoList.length
-        ? `(${completed}/${toDoList.length})`
-        : ''}
+      {header}
     </h2>
     <ul>
       {#each toDoList as task}
