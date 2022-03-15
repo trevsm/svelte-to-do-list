@@ -77,7 +77,7 @@
     justify-content: space-between;
 
     max-width: 500px;
-    height: 700px;
+    height: 100%;
     margin: 0 auto;
     padding: 30px;
     .top {
