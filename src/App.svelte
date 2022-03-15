@@ -1,25 +1,13 @@
 <script lang="ts">
+  import Task from './components/Task.svelte';
   import { local } from './tools';
-
-  interface task {
-    label: string;
-    done: boolean;
-    index: number;
-  }
+  import type { task } from './types';
 
   // State-like variables
   let toDoList: task[] = local('toDoList') || [];
 
   // Bound input value
   let inputValue = '';
-
-  // Subscriptions (is updated every time state is updated)
-  $: completed = toDoList.filter((task) => task.done).length;
-  $: local('toDoList', toDoList);
-  $: header = toDoList.length
-    ? "Today's Tasks: " +
-      (toDoList.length ? `(${completed}/${toDoList.length})` : '')
-    : 'No Tasks';
 
   // To-do functions
   function addTask() {
@@ -30,15 +18,25 @@
     ];
     inputValue = '';
   }
+
   function toggleDone(index: number) {
     toDoList = toDoList.map((task) => {
       if (task.index !== index) return task;
       return { ...task, done: !task.done };
     });
   }
+
   function deleteTask(index: number) {
     toDoList = toDoList.filter((task) => task.index !== index);
   }
+
+  // Subscriptions (is updated every time "state" is updated)
+  $: completed = toDoList.filter((task) => task.done).length;
+  $: local('toDoList', toDoList);
+  $: header = toDoList.length
+    ? "Today's Tasks: " +
+      (toDoList.length ? `(${completed}/${toDoList.length})` : '')
+    : 'No Tasks';
 </script>
 
 <main>
@@ -47,20 +45,8 @@
       {header}
     </h2>
     <ul>
-      {#each toDoList as task}
-        <li class="task">
-          <div>
-            <input
-              type="radio"
-              checked={task.done}
-              on:click={() => toggleDone(task.index)}
-            />
-            <span class={task.done && 'line-through'}>
-              {task.label}
-            </span>
-          </div>
-          <button on:click={() => deleteTask(task.index)}>x</button>
-        </li>
+      {#each toDoList as { done, index, label }}
+        <Task {deleteTask} {toggleDone} bind:done bind:index {label} />
       {/each}
     </ul>
   </div>
@@ -83,20 +69,6 @@
     .top {
       ul {
         padding: 0;
-        li.task {
-          display: flex;
-          justify-content: space-between;
-          list-style-type: none;
-
-          padding: 10px;
-          margin-bottom: 10px;
-          border-radius: 7px;
-          box-shadow: 3px 2px 7px #00000014;
-          font-size: 20px;
-          input {
-            margin-right: 20px;
-          }
-        }
       }
     }
     .textInput {
@@ -108,8 +80,5 @@
         width: 100%;
       }
     }
-  }
-  .line-through {
-    text-decoration: line-through;
   }
 </style>
